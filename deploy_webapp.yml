@@ -1,9 +1,26 @@
 ---
+pre_tasks:
+  - name: Ensure logging the deployment start
+    lineinfile:
+      path: /tmp/times.txt
+      create: yes
+      line: "{{ lookup('pipe', 'date') }}: Deploying version {{ webapp_version }} to {{ inventory_hostname }}"
+    delegate_to: localhost  
 
 - name: Ensure Web App is deployed
   hosts: web_servers
   gather_facts: false
+  serial:
+    - 1
+    - 100%
+  max_fail_percentage: 0  
   roles:
     - role: webapp
 
-
+post_tasks:
+  - name: Ensure logging the deployment completion
+    lineinfile:
+      path: /tmp/times.txt
+      create: yes
+      line: "{{ lookup('pipe', 'date') }}: Deployment complete {{ webapp_version }} to {{ inventory_hostname }}"
+    delegate_to: localhost  

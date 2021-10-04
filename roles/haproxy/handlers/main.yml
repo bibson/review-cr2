@@ -6,9 +6,11 @@
   service:
     name: haproxy
     state: restarted
+  become: true  
 
 - name: reload haproxy
   service:
     name: haproxy
     state: reloaded
+  become: true  
 
